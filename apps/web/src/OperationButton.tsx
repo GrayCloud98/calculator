@@ -1,4 +1,4 @@
-import { ACTIONS } from "./actions";
+import { ACTIONS } from "@calc/shared";
 
 interface OperationButtonProps {
   dispatch: React.Dispatch<{ type: string; payload?: { operation?: string } }>;

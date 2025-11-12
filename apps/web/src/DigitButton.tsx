@@ -1,4 +1,4 @@
-import { ACTIONS } from "./actions";
+import { ACTIONS } from "@calc/shared";
 
 interface DigitButtonProps {
   dispatch: React.Dispatch<{ type: string; payload?: { digit?: string } }>;
@@ -7,9 +7,7 @@ interface DigitButtonProps {
 
 export default function DigitButton({ dispatch, digit }: DigitButtonProps) {
   return (
-    <button
-      onClick={() => dispatch({ type: ACTIONS.ADD_DIGIT, payload: { digit } })}
-    >
+    <button onClick={() => dispatch({ type: ACTIONS.ADD_DIGIT, payload: { digit } })}>
       {digit}
     </button>
   );
