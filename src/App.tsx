@@ -29,6 +29,7 @@ function reducer(state: State, { type, payload }: Action): State {
           overwrite: false,
         };
       }
+      if (state.currentOperand && state.currentOperand.length >= 16) return state;
       if (payload?.digit === "." || payload?.digit === ",") {
         if (state.currentOperand && state.currentOperand.includes(".")) {
           return state;
