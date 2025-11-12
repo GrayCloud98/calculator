@@ -27,7 +27,7 @@ export interface CalculatorState {
 
 export function reducer(
   state: CalculatorState,
-  { type, payload }: Action
+  { type, payload }: Action,
 ): CalculatorState {
   switch (type) {
     case ACTIONS.ADD_DIGIT: {
@@ -39,17 +39,20 @@ export function reducer(
         };
       }
 
-      if (state.currentOperand && state.currentOperand.length >= 16) return state;
+      if (state.currentOperand && state.currentOperand.length >= 15)
+        return state;
 
       if (payload?.digit === "." || payload?.digit === ",") {
-        if (state.currentOperand && state.currentOperand.includes(".")) return state;
+        if (state.currentOperand && state.currentOperand.includes("."))
+          return state;
         return {
           ...state,
           currentOperand: `${state.currentOperand ?? "0"}${payload.digit}`,
         };
       }
 
-      if (payload?.digit === "." && state.currentOperand?.includes(".")) return state;
+      if (payload?.digit === "." && state.currentOperand?.includes("."))
+        return state;
       if (payload?.digit === "0" && state.currentOperand === "0") return state;
 
       return {
@@ -59,7 +62,8 @@ export function reducer(
     }
 
     case ACTIONS.CHOOSE_OPERATION: {
-      if (state.currentOperand == null && state.previousOperand == null) return state;
+      if (state.currentOperand == null && state.previousOperand == null)
+        return state;
 
       if (state.currentOperand == null) {
         return { ...state, operation: payload?.operation ?? null };
@@ -79,7 +83,7 @@ export function reducer(
         previousOperand: evaluate(
           state.currentOperand,
           state.previousOperand,
-          state.operation
+          state.operation,
         ),
         operation: payload?.operation ?? null,
         currentOperand: null,
@@ -87,7 +91,12 @@ export function reducer(
     }
 
     case ACTIONS.CLEAR:
-      return { currentOperand: null, previousOperand: null, operation: null, overwrite: false };
+      return {
+        currentOperand: null,
+        previousOperand: null,
+        operation: null,
+        overwrite: false,
+      };
 
     case ACTIONS.DELETE_DIGIT: {
       if (state.overwrite) {
@@ -101,7 +110,8 @@ export function reducer(
     }
 
     case ACTIONS.EVALUATE: {
-      if (!state.operation || !state.currentOperand || !state.previousOperand) return state;
+      if (!state.operation || !state.currentOperand || !state.previousOperand)
+        return state;
       return {
         ...state,
         overwrite: true,
@@ -110,7 +120,7 @@ export function reducer(
         currentOperand: evaluate(
           state.currentOperand,
           state.previousOperand,
-          state.operation
+          state.operation,
         ),
       };
     }

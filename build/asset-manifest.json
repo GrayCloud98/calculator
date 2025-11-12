@@ -6,8 +6,5 @@
     "main.abc9c5d4.css.map": "/calculator/static/css/main.abc9c5d4.css.map",
     "main.45f23075.js.map": "/calculator/static/js/main.45f23075.js.map"
   },
-  "entrypoints": [
-    "static/css/main.abc9c5d4.css",
-    "static/js/main.45f23075.js"
-  ]
+  "entrypoints": ["static/css/main.abc9c5d4.css", "static/js/main.45f23075.js"]
 }

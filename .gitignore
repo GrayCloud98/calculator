@@ -1,4 +1,31 @@
-# Logs
+# ===============================
+# 🧱 Node & Dependencies
+# ===============================
+node_modules/
+apps/*/node_modules/
+packages/*/node_modules/
+
+# ===============================
+# 🏗️ Build Outputs
+# ===============================
+dist/
+apps/*/dist/
+packages/*/dist/
+
+# Vite cache
+.vite/
+apps/*/.vite/
+
+# Temporary build artifacts
+*.local
+*.cache
+.cache/
+.tmp/
+tsconfig.tsbuildinfo
+
+# ===============================
+# 🧰 Logs
+# ===============================
 logs
 *.log
 npm-debug.log*
@@ -7,18 +34,29 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
+# ===============================
+# 🧑‍💻 Editor & OS Files
+# ===============================
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# ===============================
+# 🚀 Miscellaneous
+# ===============================
+# Local environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+apps/*/package-lock.json
+packages/*/package-lock.json

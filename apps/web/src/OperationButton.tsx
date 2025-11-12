@@ -5,7 +5,10 @@ interface OperationButtonProps {
   operation: string;
 }
 
-export default function OperationButton({ dispatch, operation }: OperationButtonProps) {
+export default function OperationButton({
+  dispatch,
+  operation,
+}: OperationButtonProps) {
   return (
     <button
       onClick={() =>

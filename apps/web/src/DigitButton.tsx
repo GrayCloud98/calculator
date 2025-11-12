@@ -7,7 +7,9 @@ interface DigitButtonProps {
 
 export default function DigitButton({ dispatch, digit }: DigitButtonProps) {
   return (
-    <button onClick={() => dispatch({ type: ACTIONS.ADD_DIGIT, payload: { digit } })}>
+    <button
+      onClick={() => dispatch({ type: ACTIONS.ADD_DIGIT, payload: { digit } })}
+    >
       {digit}
     </button>
   );

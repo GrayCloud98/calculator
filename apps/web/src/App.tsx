@@ -5,12 +5,15 @@ import OperationButton from "./OperationButton";
 import { reducer, ACTIONS, formatOperand } from "@calc/shared";
 
 function App() {
-  const [{ currentOperand, previousOperand, operation }, dispatch] = useReducer(reducer, {
-    currentOperand: null,
-    previousOperand: null,
-    operation: null,
-    overwrite: false,
-  });
+  const [{ currentOperand, previousOperand, operation }, dispatch] = useReducer(
+    reducer,
+    {
+      currentOperand: null,
+      previousOperand: null,
+      operation: null,
+      overwrite: false,
+    },
+  );
 
   return (
     <div className="calculator-grid">
@@ -21,10 +24,15 @@ function App() {
         <div className="current-operand">{formatOperand(currentOperand)}</div>
       </div>
 
-      <button className="span-two" onClick={() => dispatch({ type: ACTIONS.CLEAR })}>
+      <button
+        className="span-two"
+        onClick={() => dispatch({ type: ACTIONS.CLEAR })}
+      >
         AC
       </button>
-      <button onClick={() => dispatch({ type: ACTIONS.DELETE_DIGIT })}>DEL</button>
+      <button onClick={() => dispatch({ type: ACTIONS.DELETE_DIGIT })}>
+        DEL
+      </button>
 
       <OperationButton operation="/" dispatch={dispatch} />
       <DigitButton digit="7" dispatch={dispatch} />
@@ -45,7 +53,10 @@ function App() {
       <DigitButton digit="0" dispatch={dispatch} />
       <DigitButton digit="." dispatch={dispatch} />
 
-      <button className="span-two" onClick={() => dispatch({ type: ACTIONS.EVALUATE })}>
+      <button
+        className="span-two"
+        onClick={() => dispatch({ type: ACTIONS.EVALUATE })}
+      >
         =
       </button>
     </div>
