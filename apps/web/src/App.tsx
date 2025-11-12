@@ -3,6 +3,7 @@ import "./style.css";
 import DigitButton from "./DigitButton";
 import OperationButton from "./OperationButton";
 import { ACTIONS } from "./actions";
+import { evaluate, formatOperand } from "@calc/shared";
 
 interface State {
   currentOperand: string | null;
@@ -67,7 +68,7 @@ function reducer(state: State, { type, payload }: Action): State {
 
       return {
         ...state,
-        previousOperand: evaluate(state),
+        previousOperand: evaluate(state.currentOperand, state.previousOperand, state.operation),
         operation: payload?.operation ?? null,
         currentOperand: null,
       };
@@ -109,47 +110,12 @@ function reducer(state: State, { type, payload }: Action): State {
         overwrite: true,
         previousOperand: null,
         operation: null,
-        currentOperand: evaluate(state),
+        currentOperand: evaluate(state.currentOperand, state.previousOperand, state.operation)
       };
 
     default:
       return state;
   }
-}
-
-function evaluate({ currentOperand, previousOperand, operation }: State): string {
-  const prev = parseFloat(previousOperand || "");
-  const curr = parseFloat(currentOperand || "");
-  if (isNaN(prev) || isNaN(curr)) return "";
-  let computation = "";
-  switch (operation) {
-    case "+":
-      computation = (prev + curr).toString();
-      break;
-    case "-":
-      computation = (prev - curr).toString();
-      break;
-    case "*":
-      computation = (prev * curr).toString();
-      break;
-    case "/":
-      computation = (prev / curr).toString();
-      break;
-    default:
-      return "";
-  }
-  return computation;
-}
-
-const INTEGER_FORMATTER = new Intl.NumberFormat("en-US", {
-  maximumFractionDigits: 0,
-});
-
-function formatOperand(operand: string | null | undefined): string | undefined {
-  if (operand == null) return;
-  const [integer, decimal] = operand.split(".");
-  if (decimal == null) return INTEGER_FORMATTER.format(parseFloat(integer));
-  return `${INTEGER_FORMATTER.format(parseFloat(integer))}.${decimal}`;
 }
 
 function App() {

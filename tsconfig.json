@@ -14,7 +14,12 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@calc/shared": ["packages/shared/src"]
+    },
+    "types": ["node"]
   },
   "include": ["apps/web/src"],
   "references": [{ "path": "./tsconfig.node.json" }]
