@@ -2,8 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 permissions:
   contents: read
@@ -17,33 +16,27 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/web
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 20
+          cache: 'pnpm'
 
-      - name: Cache node modules
-        uses: actions/cache@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
         with:
-          path: |
-            ~/.npm
-            apps/web/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('apps/web/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          version: 9
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm install
 
-      - name: Build Vite app
-        run: npm run build
+      - name: Build shared
+        run: pnpm --filter @calc/shared build
+
+      - name: Build web
+        run: pnpm --filter @calc/web build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -51,12 +44,12 @@ jobs:
           path: apps/web/dist
 
   deploy:
+    runs-on: ubuntu-latest
+    needs: build
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy
         id: deployment
         uses: actions/deploy-pages@v4
