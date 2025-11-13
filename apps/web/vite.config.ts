@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 export default defineConfig({
   plugins: [react()],
   root: ".",
-  base: "/",
+  base: "/calculator/",
   resolve: {
     alias: {
       "@calc/shared": path.resolve(__dirname, "../../packages/shared/src"),
