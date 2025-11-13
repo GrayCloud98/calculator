@@ -6,9 +6,6 @@
     "apps/*",
     "packages/*"
   ],
-  "pnpm": {
-    "hoistPattern": ["*"]
-  },
   "devDependencies": {
     "@types/node": "^24.10.1",
     "eslint": "^9.39.1",
