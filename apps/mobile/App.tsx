@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useReducer, useRef } from "react";
 import {
   View,
   Text,
@@ -6,13 +6,20 @@ import {
   Pressable,
   StatusBar,
   Dimensions,
+  Animated,
 } from "react-native";
+import LinearGradient from "react-native-linear-gradient";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { LinearGradient } from "react-native-linear-gradient";
-
 import { reducer, ACTIONS, formatOperand } from "@calc/shared";
 
-const BUTTON_SIZE = Dimensions.get("window").width / 4;
+const { width } = Dimensions.get("window");
+const BTN = width / 5;
+
+type CalcAction =
+  | { type: string }
+  | { type: string; payload?: { digit?: string; operation?: string } };
+
+type ButtonVariant = "digit" | "op" | "accent";
 
 export default function App() {
   const [{ currentOperand, previousOperand, operation }, dispatch] = useReducer(
@@ -28,78 +35,88 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <StatusBar barStyle="light-content" />
-      <SafeAreaView style={{ flex: 1 }}>
+      <View style={{ flex: 1 }}>
         <LinearGradient
-          colors={["#a38cf3", "#1d19eb"]}
-          start={{ x: 1, y: 0 }}
-          end={{ x: 0, y: 0 }}
-          style={styles.gradient}
-        >
-          <View style={styles.output}>
-            <Text style={styles.previousOperand}>
-              {formatOperand(previousOperand)} {operation}
-            </Text>
-
-            <Text style={styles.currentOperand}>
-              {formatOperand(currentOperand)}
-            </Text>
+          colors={["#120625", "#09091c", "#02030a"]}
+          start={{ x: 0.1, y: 0 }}
+          end={{ x: 0.9, y: 1 }}
+          style={StyleSheet.absoluteFill}
+        />
+        <SafeAreaView style={styles.root}>
+          <View style={styles.displayArea}>
+            <View style={styles.display}>
+              <Text style={styles.previous}>
+                {formatOperand(previousOperand)} {operation}
+              </Text>
+              <Text style={styles.current}>
+                {formatOperand(currentOperand)}
+              </Text>
+            </View>
           </View>
+          <View style={styles.pad}>
+            <Row>
+              <CalcButton
+                label="AC"
+                variant="accent"
+                onPress={() => dispatch({ type: ACTIONS.CLEAR })}
+              />
+              <CalcButton
+                label="DEL"
+                variant="op"
+                onPress={() => dispatch({ type: ACTIONS.DELETE_DIGIT })}
+              />
+              <CalcButton
+                label="%"
+                variant="digit"
+                onPress={() => {}}
+              />
+              <Operation label="/" dispatch={dispatch} />
+            </Row>
 
-          <View style={styles.row}>
-            <CalcButton
-              label="AC"
-              spanTwo
-              onPress={() => dispatch({ type: ACTIONS.CLEAR })}
-            />
-            <CalcButton
-              label="DEL"
-              onPress={() => dispatch({ type: ACTIONS.DELETE_DIGIT })}
-            />
-            <CalcButton
-              label="/"
-              onPress={() =>
-                dispatch({
-                  type: ACTIONS.CHOOSE_OPERATION,
-                  payload: { operation: "/" },
-                })
-              }
-            />
-          </View>
+            <Row>
+              <Digit label="7" dispatch={dispatch} />
+              <Digit label="8" dispatch={dispatch} />
+              <Digit label="9" dispatch={dispatch} />
+              <Operation label="*" dispatch={dispatch} />
+            </Row>
 
-          <View style={styles.row}>
-            <Digit label="7" dispatch={dispatch} />
-            <Digit label="8" dispatch={dispatch} />
-            <Digit label="9" dispatch={dispatch} />
-            <Operation label="*" dispatch={dispatch} />
-          </View>
+            <Row>
+              <Digit label="4" dispatch={dispatch} />
+              <Digit label="5" dispatch={dispatch} />
+              <Digit label="6" dispatch={dispatch} />
+              <Operation label="-" dispatch={dispatch} />
+            </Row>
 
-          <View style={styles.row}>
-            <Digit label="4" dispatch={dispatch} />
-            <Digit label="5" dispatch={dispatch} />
-            <Digit label="6" dispatch={dispatch} />
-            <Operation label="+" dispatch={dispatch} />
-          </View>
+            <Row>
+              <Digit label="1" dispatch={dispatch} />
+              <Digit label="2" dispatch={dispatch} />
+              <Digit label="3" dispatch={dispatch} />
+              <Operation label="+" dispatch={dispatch} />
+            </Row>
 
-          <View style={styles.row}>
-            <Digit label="1" dispatch={dispatch} />
-            <Digit label="2" dispatch={dispatch} />
-            <Digit label="3" dispatch={dispatch} />
-            <Operation label="-" dispatch={dispatch} />
+            <Row>
+              <CalcButton
+                label="±"
+                variant="digit"
+                onPress={() => {}}
+              />
+              <Digit label="0" dispatch={dispatch} />
+              <Digit label="." dispatch={dispatch} />
+              <CalcButton
+                label="="
+                variant="accent"
+                onPress={() => dispatch({ type: ACTIONS.EVALUATE })}
+              />
+            </Row>
           </View>
-
-          <View style={styles.row}>
-            <Digit label="0" dispatch={dispatch} />
-            <Digit label="." dispatch={dispatch} />
-            <CalcButton
-              label="="
-              spanTwo
-              onPress={() => dispatch({ type: ACTIONS.EVALUATE })}
-            />
-          </View>
-        </LinearGradient>
-      </SafeAreaView>
+        </SafeAreaView>
+      </View>
     </SafeAreaProvider>
   );
+}
+
+function Row({ children }: { children: React.ReactNode }) {
+  return <View style={styles.row}>{children}</View>;
 }
 
 function Digit({
@@ -107,13 +124,17 @@ function Digit({
   dispatch,
 }: {
   label: string;
-  dispatch: React.Dispatch<any>;
+  dispatch: React.Dispatch<CalcAction>;
 }) {
   return (
     <CalcButton
       label={label}
+      variant="digit"
       onPress={() =>
-        dispatch({ type: ACTIONS.ADD_DIGIT, payload: { digit: label } })
+        dispatch({
+          type: ACTIONS.ADD_DIGIT,
+          payload: { digit: label },
+        })
       }
     />
   );
@@ -124,11 +145,12 @@ function Operation({
   dispatch,
 }: {
   label: string;
-  dispatch: React.Dispatch<any>;
+  dispatch: React.Dispatch<CalcAction>;
 }) {
   return (
     <CalcButton
       label={label}
+      variant="op"
       onPress={() =>
         dispatch({
           type: ACTIONS.CHOOSE_OPERATION,
@@ -142,78 +164,135 @@ function Operation({
 function CalcButton({
   label,
   onPress,
-  spanTwo = false,
+  variant = "digit",
+  flex = 1,
 }: {
   label: string;
   onPress: () => void;
-  spanTwo?: boolean;
+  variant?: ButtonVariant;
+  flex?: number;
 }) {
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const pressIn = () => {
+    Animated.timing(scale, {
+      toValue: 0.9,
+      duration: 80,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const pressOut = () => {
+    Animated.spring(scale, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 20,
+      bounciness: 7,
+    }).start();
+  };
+
+  const colors =
+    variant === "accent"
+      ? ["#ff6ac1", "#ffb86c"]
+      : variant === "op"
+      ? ["#33c9ff", "#7b5cff"]
+      : ["#27293a", "#191b28"];
+
+  const textColor = variant === "digit" ? "#f7f7ff" : "#ffffff";
+
   return (
     <Pressable
+      onPressIn={pressIn}
+      onPressOut={pressOut}
       onPress={onPress}
-      style={({ pressed }) => [
-        styles.button,
-        spanTwo && styles.spanTwo,
-        pressed && styles.buttonPressed,
-      ]}
+      style={{ flex }}
     >
-      <Text style={styles.buttonText}>{label}</Text>
+      <Animated.View
+        style={[
+          styles.btnOuter,
+          { transform: [{ scale }] },
+          variant !== "digit" && styles.btnOuterStrong,
+        ]}
+      >
+        <LinearGradient colors={colors} style={styles.btnInner}>
+          <Text style={[styles.btnText, { color: textColor }]}>{label}</Text>
+        </LinearGradient>
+      </Animated.View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  gradient: {
+  root: {
     flex: 1,
-    paddingTop: 20,
   },
-
-  output: {
-    width: "100%",
-    backgroundColor: "rgba(0,0,0,0.33)",
-    minHeight: BUTTON_SIZE,
-    justifyContent: "center",
-    alignItems: "flex-end",
-    padding: 12,
+  displayArea: {
+    flex: 1.0,
+    justifyContent: "flex-end",
+    alignItems: "stretch",
+    paddingHorizontal: 22,
+    paddingTop: 12,
+    marginBottom: 12,
   },
-
-  previousOperand: {
-    color: "rgba(255,255,255,0.8)",
-    fontSize: 24,
+  display: {
+    backgroundColor: "rgba(10,10,20,0.85)",
+    borderRadius: 28,
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+    borderWidth: 1,
+    borderColor: "rgba(180,150,255,0.35)",
+    shadowColor: "#000",
+    shadowOpacity: 0.4,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 10 },
+    elevation: 12,
   },
-
-  currentOperand: {
-    color: "white",
-    fontSize: 40,
+  previous: {
+    color: "rgba(230,230,255,0.7)",
+    fontSize: 20,
+    marginBottom: 4,
   },
-
+  current: {
+    color: "#ffffff",
+    fontSize: 52,
+    fontWeight: "600",
+  },
+  pad: {
+    flex: 1.4,
+    paddingHorizontal: 14,
+    paddingBottom: 8,
+    gap: 14,
+  },
   row: {
     flexDirection: "row",
-    width: "100%",
+    gap: 14,
+    height: BTN,
+  },
+  btnOuter: {
+    flex: 1,
+    height: "100%",
+    borderRadius: BTN / 2,
+    overflow: "hidden",
+    backgroundColor: "rgba(20,20,35,0.9)",
+    shadowColor: "#000",
+    shadowOpacity: 0.45,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 12,
+  },
+  btnOuterStrong: {
+    shadowOpacity: 0.55,
+    shadowRadius: 16,
+    elevation: 14,
+  },
+  btnInner: {
+    flex: 1,
+    borderRadius: BTN / 2,
     justifyContent: "center",
     alignItems: "center",
   },
-
-  button: {
-    width: BUTTON_SIZE,
-    height: BUTTON_SIZE,
-    backgroundColor: "rgba(255,255,255,0.69)",
-    borderWidth: 0.5,
-    borderColor: "black",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  buttonPressed: {
-    backgroundColor: "rgba(255,255,255,0.85)",
-  },
-
-  buttonText: {
-    fontSize: 32,
-    color: "black",
-  },
-
-  spanTwo: {
-    width: BUTTON_SIZE * 2,
+  btnText: {
+    fontSize: 26,
+    fontWeight: "600",
   },
 });
